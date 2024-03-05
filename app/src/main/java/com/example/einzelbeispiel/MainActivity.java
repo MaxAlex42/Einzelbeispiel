@@ -1,5 +1,7 @@
 package com.example.einzelbeispiel;
 
+import static android.view.View.*;
+
 import android.icu.util.Output;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,6 +23,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.Socket;
 
 public class MainActivity extends AppCompatActivity {
@@ -38,12 +41,7 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
         Button b1 = findViewById(R.id.sendButton);
-        b1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sendButtonClicked();
-            }
-        });
+        b1.setOnClickListener(v -> sendButtonClicked());
         Button b2 = findViewById(R.id.calcButton);
         b2.setOnClickListener(v -> calcButtonClicked());
     }
@@ -55,11 +53,14 @@ public class MainActivity extends AppCompatActivity {
                 EditText et = findViewById(R.id.textInput);
                 String data = et.getText().toString();
                 try {
-                    Socket s = new Socket("se2-submission.aau.at", 20080);
-                    BufferedWriter out = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
-                    out.write(data);
+                    Socket socket = new Socket("se2-submission.aau.at", 20080);
+                    BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+                    BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-                    BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream()));
+                    out.write(data);
+                    out.newLine();
+                    out.flush();
+
                     result = in.readLine();
                     TextView tw = findViewById(R.id.responseText);
 
@@ -71,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
 
                     in.close();
                     out.close();
-                    s.close();
+                    socket.close();
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
