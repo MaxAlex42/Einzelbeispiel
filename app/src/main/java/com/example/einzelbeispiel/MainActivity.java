@@ -1,35 +1,25 @@
 package com.example.einzelbeispiel;
 
-import static android.view.View.*;
-
-import android.icu.util.Output;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    private String result;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,50 +31,95 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
         Button b1 = findViewById(R.id.sendButton);
-        b1.setOnClickListener(v -> sendButtonClicked());
+        b1.setOnClickListener(v -> {
+            EditText et = findViewById(R.id.textInput);
+            String input = et.getText().toString();
+
+            sendButtonClicked(input);
+        });
         Button b2 = findViewById(R.id.calcButton);
-        b2.setOnClickListener(v -> calcButtonClicked());
+        b2.setOnClickListener(v -> {
+            EditText et = findViewById(R.id.textInput);
+            String input = et.getText().toString();
+            // checking input
+            if(isNumeric(input)) {
+                calcButtonClicked(input);
+            } else {
+                TextView tw = findViewById(R.id.resultText);
+                tw.setText("Input not numeric");
+            }
+        });
     }
 
-    private void sendButtonClicked() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                EditText et = findViewById(R.id.textInput);
-                String data = et.getText().toString();
-                try {
-                    Socket socket = new Socket("se2-submission.aau.at", 20080);
-                    BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-                    BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+    // ensures that the input only contains digits, for the calc function
+    private boolean isNumeric(String input) {
+        for (char c : input.toCharArray()) {
+            if(!Character.isDigit(c)) {
+                return false;
+            }
+        }
+        return true;
+    }
 
-                    out.write(data);
-                    out.newLine();
-                    out.flush();
+    private void sendButtonClicked(String input) {
+        new Thread(() -> {
+            try {
+                Socket socket = new Socket("se2-submission.aau.at", 20080);
+                BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-                    result = in.readLine();
-                    TextView tw = findViewById(R.id.responseText);
+                out.write(input);
+                out.newLine();
+                // ensure data is sent
+                out.flush();
 
-                    Log.d("MainActivity", "Server Response: " + result);
+                String result = in.readLine();
+                TextView tw = findViewById(R.id.responseText);
 
-                    runOnUiThread(() -> {
-                        tw.setText(result);
-                    });
+                runOnUiThread(() -> tw.setText(result));
 
-                    in.close();
-                    out.close();
-                    socket.close();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                in.close();
+                out.close();
+                socket.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
         }).start();
     }
 
-    private void calcButtonClicked() {
-        EditText et = findViewById(R.id.textInput);
-        String input = et.getText().toString();
-        String result = "";
+    private void calcButtonClicked(String input) {
+        List<Integer> nonPrimes = new ArrayList<>();
+        for (char c :  input.toCharArray()) {
+            // checking if digit is prime
+            if(!isPrime(Character.getNumericValue(c))) {
+                nonPrimes.add(Character.getNumericValue(c));
+            }
+        }
+        // sorting numbers as asked
+        Collections.sort(nonPrimes);
+        TextView tw = findViewById(R.id.resultText);
+        tw.setText(convertToString(nonPrimes));
+    }
 
+    // converting int list to string and returning it
+    private String convertToString(List<Integer> ints) {
+        StringBuilder builder = new StringBuilder();
+        for (int i : ints) {
+            builder.append(i);
+        }
+        return builder.toString();
+    }
 
+    // standard prime function
+    private boolean isPrime(int n) {
+        if (n <= 1) {
+            return false;
+        }
+        for (int i = 2; i * i <= n; i++) {
+            if (n % i == 0) {
+                return false;
+            }
+        }
+        return true;
     }
 }
