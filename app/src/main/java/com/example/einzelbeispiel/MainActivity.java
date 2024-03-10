@@ -17,9 +17,14 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    private EditText et;
+    private TextView tw;
+    private String input;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,22 +35,25 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        et = findViewById(R.id.textInput);
+        tw = findViewById(R.id.responseText);
+
         Button b1 = findViewById(R.id.sendButton);
         b1.setOnClickListener(v -> {
-            EditText et = findViewById(R.id.textInput);
-            String input = et.getText().toString();
-
+            input = et.getText().toString();
             sendButtonClicked(input);
         });
+
         Button b2 = findViewById(R.id.calcButton);
         b2.setOnClickListener(v -> {
-            EditText et = findViewById(R.id.textInput);
-            String input = et.getText().toString();
+            input = et.getText().toString();
             // checking input
-            if(isNumeric(input)) {
+            if(input.equals("")) {
+                tw.setText("Input must not be empty");
+            } else if(isNumeric(input)) {
                 calcButtonClicked(input);
             } else {
-                TextView tw = findViewById(R.id.resultText);
                 tw.setText("Input not numeric");
             }
         });
@@ -74,7 +82,6 @@ public class MainActivity extends AppCompatActivity {
                 out.flush();
 
                 String result = in.readLine();
-                TextView tw = findViewById(R.id.responseText);
 
                 runOnUiThread(() -> tw.setText(result));
 
@@ -96,8 +103,8 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         // sorting numbers as asked
-        Collections.sort(nonPrimes);
-        TextView tw = findViewById(R.id.resultText);
+        //Collections.sort(nonPrimes);
+        Collections.sort(nonPrimes, Collections.reverseOrder());
         tw.setText(convertToString(nonPrimes));
     }
 

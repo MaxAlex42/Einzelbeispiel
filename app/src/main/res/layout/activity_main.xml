@@ -5,6 +5,8 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:isScrollContainer="false"
     tools:context=".MainActivity">
 
     <TextView
@@ -28,12 +30,12 @@
         android:layout_marginBottom="50dp"
         android:ems="10"
         android:hint="Matrikelnummer"
+        android:importantForAutofill="no"
         android:inputType="text"
         android:minHeight="48dp"
         app:layout_constraintBottom_toTopOf="@+id/responseLabel"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/inputLabel"
-        android:importantForAutofill="no" />
+        app:layout_constraintTop_toBottomOf="@+id/inputLabel" />
 
     <Button
         android:id="@+id/sendButton"
@@ -88,13 +90,13 @@
         android:id="@+id/responseLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="150dp"
         android:layout_marginTop="50dp"
-        android:layout_marginEnd="144dp"
+        android:layout_marginEnd="150dp"
         android:layout_marginBottom="468dp"
-        android:text="Antwort vom Server"
+        android:text="Ergebnis"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textInput" />
 
@@ -102,41 +104,13 @@
         android:id="@+id/responseText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
         android:layout_marginBottom="369dp"
+        android:gravity="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0" />
-
-    <TextView
-        android:id="@+id/resultLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="170dp"
-        android:layout_marginTop="127dp"
-        android:layout_marginEnd="183dp"
-        android:layout_marginBottom="322dp"
-        android:text="Ergebnis"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/responseLabel" />
-
-    <TextView
-        android:id="@+id/resultText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="175dp"
-        android:layout_marginTop="45dp"
-        android:layout_marginEnd="175dp"
-        android:layout_marginBottom="258dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/resultLabel" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
