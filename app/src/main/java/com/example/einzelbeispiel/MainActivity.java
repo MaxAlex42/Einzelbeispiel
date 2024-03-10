@@ -17,10 +17,11 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    private final String HOST = "se2-submission.aau.at";
+    private final int SERVER_PORT = 20080;
     private EditText et;
     private TextView tw;
     private String input;
@@ -49,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
         b2.setOnClickListener(v -> {
             input = et.getText().toString();
             // checking input
-            if(input.equals("")) {
+            if(input.isEmpty()) {
                 tw.setText("Input must not be empty");
             } else if(isNumeric(input)) {
                 calcButtonClicked(input);
@@ -72,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
     private void sendButtonClicked(String input) {
         new Thread(() -> {
             try {
-                Socket socket = new Socket("se2-submission.aau.at", 20080);
+                Socket socket = new Socket(HOST, SERVER_PORT);
                 BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
                 BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
@@ -89,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
                 out.close();
                 socket.close();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
             }
         }).start();
     }
@@ -103,8 +104,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         // sorting numbers as asked
-        //Collections.sort(nonPrimes);
-        Collections.sort(nonPrimes, Collections.reverseOrder());
+        Collections.sort(nonPrimes);
         tw.setText(convertToString(nonPrimes));
     }
 
